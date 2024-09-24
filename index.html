@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotating Dual Circle Clock with Offset Text</title>
+    <style>
+        :root {
+            --pmcursor-color: #00FF00;
+            --amcursor-color: #ED2939;
+            --cursor-color: var(--am-color);
+
+            --pmbackground-color: #000000;
+            --ambackground-color: #FFFFFF;
+            --background-color: var(--am-color);
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: var(--background-color);
+
+        }
+
+        svg {
+            width: 500px;
+            height: 500px;
+        }
+
+        #rotating-text-inner,
+        #rotating-text-outer {
+            transform-origin: center;
+        }
+    </style>
+</head>
+
+<body>
+    <svg viewBox="0 0 300 300">
+        <!-- Circles for reference -->
+        <circle cx="150" cy="150" r="120" fill="none" stroke="#ccc" stroke-width="1" />
+        <circle cx="150" cy="150" r="90" fill="none" stroke="#ccc" stroke-width="1" />
+
+        <!-- Vertical line from center -->
+        <line x1="150" y1="150" x2="150" y2="30" stroke="var(--cursor-color)" stroke-width=".5" />
+
+        <g id="rotating-text-outer">
+            <path id="circlePathOuter" d="M150,30 A120,120 0 0 1 150,270 A120,120 0 0 1 150,30" fill="none" />
+            <text font-size="14" fill="#333">
+                <textPath href="#circlePathOuter" startOffset="0%">
+                    <tspan dy="-10">12</tspan>
+                </textPath>
+                <textPath href="#circlePathOuter" startOffset="8.33%">
+                    <tspan dy="-10">1</tspan>
+                </textPath>
+                <textPath href="#circlePathOuter" startOffset="16.67%">
+                    <tspan dy="-10">2</tspan>
+                </textPath>
+                <textPath href="#circlePathOuter" startOffset="25%">
+                    <tspan dy="-10">3</tspan>
+                </textPath>
+                <textPath href="#circlePathOuter" startOffset="33.33%">
+                    <tspan dy="-10">4</tspan>
+                </textPath>
+                <textPath href="#circlePathOuter" startOffset="41.67%">
+                    <tspan dy="-10">5</tspan>
+                </textPath>
+                <textPath href="#circlePathOuter" startOffset="50%">
+                    <tspan dy="-10">6</tspan>
+                </textPath>
+                <textPath href="#circlePathOuter" startOffset="58.33%">
+                    <tspan dy="-10">7</tspan>
+                </textPath>
+                <textPath href="#circlePathOuter" startOffset="66.67%">
+                    <tspan dy="-10">8</tspan>
+                </textPath>
+                <textPath href="#circlePathOuter" startOffset="75%">
+                    <tspan dy="-10">9</tspan>
+                </textPath>
+                <textPath href="#circlePathOuter" startOffset="83.33%">
+                    <tspan dy="-10">10</tspan>
+                </textPath>
+                <textPath href="#circlePathOuter" startOffset="91.67%">
+                    <tspan dy="-10">11</tspan>
+                </textPath>
+            </text>
+        </g>
+
+        <g id="rotating-text-inner">
+            <path id="circlePathInner" d="M150,60 A90,90 0 0 1 150,240 A90,90 0 0 1 150,60" fill="none" />
+            <text font-size="12" fill="#666">
+                <textPath href="#circlePathInner" startOffset="0%">
+                    <tspan dy="-7">60</tspan>
+                </textPath>
+                <textPath href="#circlePathInner" startOffset="8.33%">
+                    <tspan dy="-7">5</tspan>
+                </textPath>
+                <textPath href="#circlePathInner" startOffset="16.67%">
+                    <tspan dy="-7">10</tspan>
+                </textPath>
+                <textPath href="#circlePathInner" startOffset="25%">
+                    <tspan dy="-7">15</tspan>
+                </textPath>
+                <textPath href="#circlePathInner" startOffset="33.33%">
+                    <tspan dy="-7">20</tspan>
+                </textPath>
+                <textPath href="#circlePathInner" startOffset="41.67%">
+                    <tspan dy="-7">25</tspan>
+                </textPath>
+                <textPath href="#circlePathInner" startOffset="50%">
+                    <tspan dy="-7">30</tspan>
+                </textPath>
+                <textPath href="#circlePathInner" startOffset="58.33%">
+                    <tspan dy="-7">35</tspan>
+                </textPath>
+                <textPath href="#circlePathInner" startOffset="66.67%">
+                    <tspan dy="-7">40</tspan>
+                </textPath>
+                <textPath href="#circlePathInner" startOffset="75%">
+                    <tspan dy="-7">45</tspan>
+                </textPath>
+                <textPath href="#circlePathInner" startOffset="83.33%">
+                    <tspan dy="-7">50</tspan>
+                </textPath>
+                <textPath href="#circlePathInner" startOffset="91.67%">
+                    <tspan dy="-7">55</tspan>
+                </textPath>
+            </text>
+        </g>
+    </svg>
+
+    <script>
+        function syncRotation() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const milliseconds = now.getMilliseconds();
+
+            // Calculate rotation for the inner circle (minutes)
+            const initialRotationMinutes = ((minutes * 60 + seconds + milliseconds / 1000) / 3600) * 360;
+
+            //Update colors
+            updateClockColor(hours < 12);
+
+            // Calculate rotation for the outer circle (hours)
+            const initialRotationHours = ((hours % 12 + minutes / 60) / 12) * 360;
+
+            const rotatingTextInner = document.getElementById('rotating-text-inner');
+            const rotatingTextOuter = document.getElementById('rotating-text-outer');
+
+            rotatingTextInner.style.transform = `rotate(${-initialRotationMinutes}deg)`;
+            rotatingTextOuter.style.transform = `rotate(${-initialRotationHours}deg)`;
+        }
+
+        //Set color function
+        function updateClockColor(isAM) {
+            const cursorcolor = isAM ? 'var(--amcursor-color)' : 'var(--pmcursor-color)';
+            document.documentElement.style.setProperty('--cursor-color', cursorcolor);
+
+            const backgroundcolor = isAM ? 'var(--ambackground-color)' : 'var(--pmbackground-color)';
+            document.documentElement.style.setProperty('--background-color', backgroundcolor);
+        }
+
+        // Sync rotation on load and every second
+        syncRotation();
+        setInterval(syncRotation, 1000);
+    </script>
+</body>
+
+</html>
